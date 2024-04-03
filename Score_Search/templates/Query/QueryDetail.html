@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- 必须的 meta 标签 -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.1.2/echarts.min.js"></script>
+    <title>查询详情</title>
+</head>
+<body>
+    <div class="card-deck">
+        {% for key, course_record in Dict.items %}
+        <div class="card bg-light mb-3" style="width: 18rem;">
+            {% load static %}
+            <img src="{% static 'R.jpg' %}" class="card-img-top" alt="" style="height: 8rem;">
+            <!-- 这里是查询结果的头部，显示了查询的两个条件，使用if模板标签来区分是课程查询还是教师查询，查询的类型决定界面显示的前后 -->
+            {% if QueryType == 'default' %}
+            <div class="card-body">
+                <h5 class="card-title">
+                    <span>课程名</span>
+                    {% with coursefirst=course_record|first %}
+                    <span>{{ coursefirst.name_course }}</span>
+                    {% endwith %}
+                </h5>
+                <div class="Professor">
+                        <span>授课教师</span>
+                        <span>{{ key }}</span>
+                </div>
+            </div>
+            {% elif QueryType == 'professor' %}
+            <div class="card-body">
+                <h5 class="card-title">
+                    <span>授课教师</span>
+                    {% with coursefirst=course_record|first %}
+                    <span>{{ coursefirst.professor }}</span>
+                    {% endwith %}
+                </h5>
+                <div class="Professor">
+                        <span>课程名</span>
+                        <span>{{ key }}</span>
+                </div>
+            </div>
+            {% endif %}
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <div class="Scores">
+                        <span>给分详情</span>
+                    </div>
+                    <a href="#" class="btn btn-secondary" style="margin: 1rem">查看详情</a>
+                    <div class="Detail">
+                        <div id="detailChart-pie-{{ key }}" style="width: 500px;height:300px;"></div>
+                        <script>
+                            var score_record = [
+                                {% for record in course_record %}
+                                    {{ record.score }},
+                                {% endfor %}
+                            ];
+                            var d_s_90_up = 0,
+                                d_s_85_89 = 0,
+                                d_s_82_84 = 0,
+                                d_s_78_81 = 0,
+                                d_s_75_77 = 0,
+                                d_s_72_74 = 0,
+                                d_s_68_71 = 0,
+                                d_s_64_67 = 0,
+                                d_s_60_63 = 0,
+                                d_s_60_down = 0;
+                            for(let idx=0,len=score_record.length; idx<len; idx++){
+                                switch(true){
+                                    case score_record[idx]>=90: d_s_90_up+=1; break;
+                                    case score_record[idx]>=85 && score_record[idx]<=89: d_s_85_89+=1; break;
+                                    case score_record[idx]>=82 && score_record[idx]<=84: d_s_82_84+=1; break;
+                                    case score_record[idx]>=78 && score_record[idx]<=81: d_s_78_81+=1; break;
+                                    case score_record[idx]>=75 && score_record[idx]<=77: d_s_75_77+=1; break;
+                                    case score_record[idx]>=72 && score_record[idx]<=74: d_s_72_74+=1; break;
+                                    case score_record[idx]>=68 && score_record[idx]<=71: d_s_68_71+=1; break;
+                                    case score_record[idx]>=64 && score_record[idx]<=67: d_s_64_67+=1; break;
+                                    case score_record[idx]>=60 && score_record[idx]<=63: d_s_60_63+=1; break;
+                                    case score_record[idx]>=0 && score_record[idx]<=60: d_s_60_down+=1; break;
+                                }
+                            }
+                            var key = "{{ key }}",
+                                chartId = `detailChart-pie-${key}`,
+                                myChartPie = echarts.init(document.getElementById(chartId));
+                            // console.log(course_record)
+                            //定义饼图数据
+                            var data = [
+                                      {value:d_s_90_up, name:'90以上'},
+                                      {value:d_s_85_89, name:'85~89'},
+                                      {value:d_s_82_84, name:'82~84'},
+                                      {value:d_s_78_81, name:'78~81'},
+                                      {value:d_s_75_77, name:'75~77'},
+                                      {value:d_s_72_74, name:'72~74'},
+                                      {value:d_s_68_71, name:'68~71'},
+                                      {value:d_s_64_67, name:'64~67'},
+                                      {value:d_s_60_63, name:'60~63'},
+                                      {value:d_s_60_down, name:'60分以下'}
+                                  ];
+                            //定义饼图配置项
+                            var option = {
+                                      title : {
+                                          text: '给分分段饼图',
+                                          x:'center'
+                                      },
+                                      tooltip : {
+                                          trigger: 'item',
+                                          formatter: "{a} <br/>{b} : {c} ({d}%)"
+                                      },
+                                      legend: {
+                                          orient: 'vertical',
+                                          left: 'left',
+                                          data: ['90以上','85~89','82~84','78~81','75~77','72~74','68~71','64~67','60~63','60分以下']
+                                      },
+                                      series : [
+                                          {
+                                              name: '给分分段详情',
+                                              type: 'pie',
+                                              radius : '55%',
+                                              center: ['50%', '60%'],
+                                              data:data,
+                                              itemStyle: {
+                                                  emphasis: {
+                                                      shadowBlur: 10,
+                                                      shadowOffsetX: 0,
+                                                      shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                                  }
+                                              }
+                                          }
+                                      ]
+                                  };
+                            //渲染饼图
+                            myChartPie.setOption(option);
+                        </script>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="AverageScore">
+                        <span>平均分</span>
+                        {% load score_search_uni_filter %}
+                        <span>{{ course_record | uni_average }}</span>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <div class="RecordNum">
+                        <span>选取的记录数</span>
+                        <span>{{ course_record | length }}</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

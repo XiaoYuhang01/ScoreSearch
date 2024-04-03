@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>给分查询系统</title>
+    <!-- 必须的 meta 标签 -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <div class="QueryBox">
+            <div class="QueryCondition">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">教师</span>
+                    </div>
+                    <input type="text" class="form-control" id="addon1" placeholder="请输入授课教师" aria-label="professor" aria-describedby="basic-addon1">
+                </div>
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon2">课程</span>
+                    </div>
+                    <input type="text" class="form-control" id="addon2" placeholder="请输入课程名" aria-label="course" aria-describedby="basic-addon2">
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                    查询
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" id="a_course" href="#" onclick="getCourse()">课程查询</a>
+                    <a class="dropdown-item" id="a_professor" href="#" onclick="getProfessor()">教师查询</a>
+                    <a class="dropdown-item" id="a_default" href="#" onclick="getBoth()">默认查询</a>
+                </div>
+            </div>
+    </div>
+    <script>
+        function getCourse() {
+			let course = document.getElementById('addon2').value,
+                a_course = document.getElementById("a_course");
+                href = `Query_Detail/课程查询/${course}`
+            console.log(course);
+            a_course.href = href;
+		};
+		function getProfessor() {
+			let professor = document.getElementById('addon1').value,
+                a_course = document.getElementById("a_professor");
+                href = `Query_Detail/教师查询/${professor}`
+            console.log(professor);
+            a_professor.href = href;
+		};
+		function getBoth() {
+			let professor = document.getElementById('addon1').value,
+			    course = document.getElementById('addon2').value,
+                a_default = document.getElementById("a_default");
+                href = `Query_Detail/默认查询/${course}/${professor}`
+            a_default.href = href;
+		};
+    </script>
+</body>
+</html>
